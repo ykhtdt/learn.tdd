@@ -11,7 +11,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${Pretendard.variable} font-sans antialiased `}>
+      <body className={`${Pretendard.variable} font-sans antialiased`}>
         <ThemeProvider>
           {children}
         </ThemeProvider>
