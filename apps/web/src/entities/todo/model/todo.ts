@@ -14,6 +14,7 @@ export const createTodo = ({
     completed: false,
     createdAt: formatISO(new Date()),
     updatedAt: formatISO(new Date()),
+    deletedAt: null,
   }
 }
 
@@ -22,5 +23,12 @@ export const toggleTodo = (todo: Todo): Todo => {
     ...todo,
     completed: !todo.completed,
     updatedAt: formatISO(new Date()),
+  }
+}
+
+export const deleteTodo = (todo: Todo): Todo => {
+  return {
+    ...todo,
+    deletedAt: formatISO(new Date()),
   }
 }

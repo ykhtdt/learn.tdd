@@ -9,6 +9,7 @@ import { formatISO } from "date-fns"
 
 import {
   createTodo,
+  deleteTodo,
   toggleTodo,
 } from "./todo"
 
@@ -23,6 +24,7 @@ describe("Todo Entity", () => {
     expect(todo.completed).toBe(false)
     expect(todo.createdAt).toBeDefined()
     expect(todo.updatedAt).toBeDefined()
+    expect(todo.deletedAt).toBeNull()
   })
 
   it("Todo의 완료 상태를 토글할 수 있다", () => {
@@ -53,5 +55,15 @@ describe("Todo Entity", () => {
     expect(secondToggledTodo.updatedAt).toEqual(secondUpdatedTime)
 
     vi.useRealTimers()
+  })
+
+  it("Todo를 제거할 수 있다", () => {
+    const todo = createTodo({
+      title: "첫 번째 할 일",
+    })
+
+    const deletedTodo = deleteTodo(todo)
+
+    expect(deletedTodo.deletedAt).not.toBeNull()
   })
 })
