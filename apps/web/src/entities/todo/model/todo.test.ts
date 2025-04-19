@@ -28,27 +28,30 @@ describe("Todo Entity", () => {
   it("Todo의 완료 상태를 토글할 수 있다", () => {
     const now = new Date()
     const initialTime = formatISO(now)
-    const updatedTime = formatISO(now.getTime() + 60 * 1000)
+    const firstUpdatedTime = formatISO(now.getTime() + 60 * 1000)
+    const secondUpdatedTime = formatISO(now.getTime() + 120 * 1000)
 
     vi.useFakeTimers()
     vi.setSystemTime(initialTime)
 
     const todo = createTodo({
-      title: "두 번째 할 일",
+      title: "첫 번째 할 일",
     })
 
-    expect(todo.completed).toBe(false)
-    expect(todo.updatedAt).toEqual(initialTime)
+    vi.setSystemTime(firstUpdatedTime)
 
+    const firstToggledTodo = toggleTodo(todo)
 
-    vi.setSystemTime(updatedTime)
+    expect(firstToggledTodo.completed).toBe(true)
+    expect(firstToggledTodo.updatedAt).toEqual(firstUpdatedTime)
 
-    const toggledTodo = toggleTodo(todo)
+    vi.setSystemTime(secondUpdatedTime)
 
-    expect(toggledTodo.completed).toBe(true)
-    expect(toggledTodo.updatedAt).toEqual(updatedTime)
+    const secondToggledTodo = toggleTodo(todo)
+
+    expect(secondToggledTodo.completed).toBe(true)
+    expect(secondToggledTodo.updatedAt).toEqual(secondUpdatedTime)
 
     vi.useRealTimers()
-
   })
 })
