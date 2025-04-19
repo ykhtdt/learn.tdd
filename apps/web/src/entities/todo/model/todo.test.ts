@@ -47,9 +47,9 @@ describe("Todo Entity", () => {
 
     vi.setSystemTime(secondUpdatedTime)
 
-    const secondToggledTodo = toggleTodo(todo)
+    const secondToggledTodo = toggleTodo(firstToggledTodo)
 
-    expect(secondToggledTodo.completed).toBe(true)
+    expect(secondToggledTodo.completed).toBe(false)
     expect(secondToggledTodo.updatedAt).toEqual(secondUpdatedTime)
 
     vi.useRealTimers()
