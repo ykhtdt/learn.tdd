@@ -1,3 +1,8 @@
 export type { Todo } from "./model/types"
 
-export { createTodo } from "./model/todo"
+export {
+  createTodo,
+  changeTodoTitle,
+  deleteTodo,
+  toggleTodo,
+} from "./model/todo"

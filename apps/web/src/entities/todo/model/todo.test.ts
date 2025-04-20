@@ -9,6 +9,7 @@ import { formatISO } from "date-fns"
 
 import {
   createTodo,
+  changeTodoTitle,
   deleteTodo,
   toggleTodo,
 } from "./todo"
@@ -65,5 +66,18 @@ describe("Todo Entity", () => {
     const deletedTodo = deleteTodo(todo)
 
     expect(deletedTodo.deletedAt).not.toBeNull()
+  })
+
+  it("Todo를 제목을 수정할 수 있다", () => {
+    const todo = createTodo({
+      title: "첫 번째 할 일",
+    })
+
+    const updatedTodo = changeTodoTitle({
+      todo,
+      title: "수정된 할 일",
+    })
+
+    expect(updatedTodo.title).toBe("수정된 할 일")
   })
 })

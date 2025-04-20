@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 import { formatISO } from "date-fns"
 
 export const createTodo = ({
-  title
+  title,
 }: {
   title: string
 }): Todo => {
@@ -15,6 +15,20 @@ export const createTodo = ({
     createdAt: formatISO(new Date()),
     updatedAt: formatISO(new Date()),
     deletedAt: null,
+  }
+}
+
+export const changeTodoTitle = ({
+  todo,
+  title,
+}: {
+  todo: Todo
+  title: string
+}): Todo => {
+  return {
+    ...todo,
+    title,
+    updatedAt: formatISO(new Date()),
   }
 }
 
