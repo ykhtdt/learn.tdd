@@ -5,8 +5,11 @@ import type { Todo } from "@/entities/todo"
 import { useState } from "react"
 
 import {
+  CheckIcon,
+  EditIcon,
   PlusIcon,
   TrashIcon,
+  XIcon,
 } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
@@ -19,23 +22,31 @@ import {
   createTodo,
   deleteTodo,
   toggleTodo,
+  changeTodoTitle,
 } from "@/entities/todo"
 
 export const HomePage = () => {
   const [todos, setTodos] = useState<Todo[]>([])
   const [title, setTitle] = useState("")
+  const [editingTodoId, setEditingTodoId] = useState<string | null>(null)
+  const [editingTodoTitle, setEditingTodoTitle] = useState("")
 
-  const handleChangeTitle = (event: React.FormEvent<HTMLInputElement>) => {
+  const handleInputTitle = (event: React.FormEvent<HTMLInputElement>) => {
     setTitle(event.currentTarget.value)
   }
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleInputTitleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       handleCreateTodo()
+      setTitle("")
     }
   }
 
   const handleCreateTodo = () => {
+    if (title.length === 0) {
+      return
+    }
+
     const newTodo = createTodo({ title })
     setTodos([...todos, newTodo])
   }
@@ -64,7 +75,25 @@ export const HomePage = () => {
 
       setTodos(updatedTodos)
     }
+  }
 
+  const handleStartEditingTodo = (id: string) => {
+    setEditingTodoId(id)
+    setEditingTodoTitle(todos.find((todo) => todo.id === id)?.title || "")
+  }
+
+  const handleSaveEditedTodoTitle = () => {
+    const updatedTodos = todos.map((todo) => {
+      if (todo.id === editingTodoId) {
+        return changeTodoTitle({
+          todo,
+          title: editingTodoTitle,
+        })
+      }
+      return todo
+    })
+    setTodos(updatedTodos)
+    setEditingTodoId(null)
   }
 
   return (
@@ -75,9 +104,10 @@ export const HomePage = () => {
         </h1>
         <div className="flex gap-2">
           <Input
+            value={title}
             placeholder="할 일을 입력하세요."
-            onInput={handleChangeTitle}
-            onKeyDown={handleKeyDown}
+            onInput={handleInputTitle}
+            onKeyDown={handleInputTitleKeyDown}
           />
           <Button onClick={handleCreateTodo} className="cursor-pointer">
             <PlusIcon />
@@ -88,20 +118,45 @@ export const HomePage = () => {
       <div className="flex flex-col gap-4">
         {todos.filter((todo) => !todo.deletedAt).map((todo) => (
           <div key={todo.id} className="flex items-center justify-between gap-2 px-4 py-2 rounded-md border">
-            <div className="flex items-center gap-2">
-              <Checkbox id={todo.id} checked={todo.completed} onCheckedChange={() => toggleComplete(todo.id)} />
-              <label
-                htmlFor={todo.id}
-                className={cn("cursor-pointer text-sm", {
-                  "line-through": todo.completed,
-                })}
-              >
-                {todo.title}
-              </label>
-            </div>
-            <Button variant="destructive" size="icon" onClick={() => handleDeleteTodo(todo.id)} className="cursor-pointer">
-              <TrashIcon />
-            </Button>
+            {editingTodoId === todo.id ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  value={editingTodoTitle}
+                  onInput={(event) => {
+                    setEditingTodoTitle(event.currentTarget.value)
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      handleSaveEditedTodoTitle()
+                    }
+                  }}
+                  autoFocus
+                />
+                <Button onClick={handleSaveEditedTodoTitle} className="cursor-pointer">
+                  <CheckIcon />
+                </Button>
+                <Button onClick={() => setEditingTodoId(null)} className="cursor-pointer">
+                  <XIcon />
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <Checkbox id={todo.id} checked={todo.completed} onCheckedChange={() => toggleComplete(todo.id)} />
+                  <label htmlFor={todo.id} className={cn("cursor-pointer text-sm", { "line-through": todo.completed })}>
+                    {todo.title}
+                  </label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="secondary" size="icon" onClick={() => handleStartEditingTodo(todo.id)} className="cursor-pointer">
+                    <EditIcon />
+                  </Button>
+                  <Button variant="destructive" size="icon" onClick={() => handleDeleteTodo(todo.id)} className="cursor-pointer">
+                    <TrashIcon />
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>
