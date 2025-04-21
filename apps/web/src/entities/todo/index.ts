@@ -5,4 +5,5 @@ export {
   changeTodoTitle,
   deleteTodo,
   toggleTodo,
+  checkTodoTitle,
 } from "./model/todo"
