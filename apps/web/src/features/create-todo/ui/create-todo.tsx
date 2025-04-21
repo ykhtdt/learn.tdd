@@ -65,8 +65,9 @@ export const CreateTodo = ({
           placeholder="할 일을 입력하세요."
           onInput={handleTitleChange}
           onKeyDown={handleEnterKeyPress}
+          data-testid="todo-input"
         />
-        <Button onClick={handleCreate} className="cursor-pointer">
+        <Button onClick={handleCreate} className="cursor-pointer" data-testid="create-todo-button">
           <PlusIcon />
           <span className="sr-only">
             추가

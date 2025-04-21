@@ -96,7 +96,12 @@ export const HomePage = () => {
 
       <div className="flex flex-col gap-4">
         {todos.map((todo) => (
-          <div key={todo.id} className="flex items-center justify-between gap-2 px-4 py-2 rounded-md border">
+          <div
+            key={todo.id}
+            className="flex items-center justify-between gap-2 px-4 py-2 rounded-md border"
+            data-testid="todo-item"
+            data-todo-id={todo.id}
+          >
             {editingTodoId === todo.id ?
               <EditTodo
                 defaultValue={todo.title}

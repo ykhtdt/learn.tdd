@@ -43,18 +43,24 @@ export const TodoItem = ({
 
   return (
     <Fragment>
-      <div className="flex items-center gap-2">
-        <Checkbox id={todo.id} checked={todo.completed} onCheckedChange={handleToggleComplete} />
-        <label htmlFor={todo.id} className={cn("cursor-pointer text-sm", { "line-through": todo.completed })}>
+      <div className="flex items-center gap-2" data-completed={todo.completed ? "true" : "false"} data-testid="todo-status-container">
+        <Checkbox id={todo.id} checked={todo.completed} onCheckedChange={handleToggleComplete} data-testid="todo-checkbox" />
+        <label htmlFor={todo.id} className={cn("cursor-pointer text-sm", { "line-through": todo.completed })} data-testid="todo-title">
           {todo.title}
         </label>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="secondary" size="icon" onClick={handleEditStart} className="cursor-pointer">
+        <Button variant="secondary" size="icon" onClick={handleEditStart} className="cursor-pointer" data-testid="edit-todo-button">
           <EditIcon />
+          <span className="sr-only">
+            수정
+          </span>
         </Button>
-        <Button variant="destructive" size="icon" onClick={handleDelete} className="cursor-pointer">
+        <Button variant="destructive" size="icon" onClick={handleDelete} className="cursor-pointer" data-testid="delete-todo-button">
           <TrashIcon />
+          <span className="sr-only">
+            제거
+          </span>
         </Button>
       </div>
     </Fragment>
