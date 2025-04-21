@@ -71,7 +71,7 @@ export const HomePage = () => {
           return deleteTodo(todo)
         }
         return todo
-      })
+      }).filter((todo) => !todo.deletedAt)
 
       setTodos(updatedTodos)
     }
@@ -116,7 +116,7 @@ export const HomePage = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {todos.filter((todo) => !todo.deletedAt).map((todo) => (
+        {todos.map((todo) => (
           <div key={todo.id} className="flex items-center justify-between gap-2 px-4 py-2 rounded-md border">
             {editingTodoId === todo.id ? (
               <div className="flex items-center gap-2">
