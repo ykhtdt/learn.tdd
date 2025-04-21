@@ -12,6 +12,7 @@ import {
   changeTodoTitle,
   deleteTodo,
   toggleTodo,
+  checkTodoTitle,
 } from "./todo"
 
 describe("Todo Entity", () => {
@@ -79,5 +80,20 @@ describe("Todo Entity", () => {
     })
 
     expect(updatedTodo.title).toBe("수정된 할 일")
+  })
+
+  describe("Todo 제목을 검증한다", () => {
+    it("제목이 비어있을 경우 checkTodoTitle 함수가 에러를 발생시킨다", () => {
+      expect(() => checkTodoTitle({ title: "" })).toThrowError("제목을 입력해주세요.")
+    })
+
+    it("제목이 30자를 초과할 경우 checkTodoTitle 함수가 에러를 발생시킨다", () => {
+      const longTitle = "이 제목은 30자가 넘는 매우 긴 제목입니다. 이렇게 긴 제목은 허용되지 않습니다."
+      expect(() => checkTodoTitle({ title: longTitle })).toThrowError("제목은 30자 이하로 입력해주세요.")
+    })
+
+    it("유효한 제목일 경우 checkTodoTitle 함수는 에러를 발생시키지 않는다", () => {
+      expect(() => checkTodoTitle({ title: "유효한 제목" })).not.toThrowError()
+    })
   })
 })

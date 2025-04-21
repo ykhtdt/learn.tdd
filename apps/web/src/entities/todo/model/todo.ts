@@ -3,6 +3,20 @@ import type { Todo } from "./types"
 import { v4 as uuidv4 } from "uuid"
 import { formatISO } from "date-fns"
 
+export const checkTodoTitle = ({
+  title,
+}: {
+  title: string
+}): void => {
+  if (title.length === 0) {
+    throw new Error("제목을 입력해주세요.")
+  }
+
+  if (title.length > 30) {
+    throw new Error("제목은 30자 이하로 입력해주세요.")
+  }
+}
+
 export const createTodo = ({
   title,
 }: {
