@@ -68,6 +68,9 @@ export const CreateTodo = ({
         />
         <Button onClick={handleCreate} className="cursor-pointer">
           <PlusIcon />
+          <span className="sr-only">
+            추가
+          </span>
         </Button>
       </div>
       {error &&
