@@ -2,20 +2,10 @@
 
 import type { Todo } from "@/entities/todo"
 
-import { useState } from "react"
-
 import {
-  CheckIcon,
-  EditIcon,
-  PlusIcon,
-  TrashIcon,
-  XIcon,
-} from "lucide-react"
-
-import { cn } from "@workspace/ui/lib/utils"
-import { Input } from "@workspace/ui/components/input"
-import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
+  useState,
+  useCallback,
+} from "react"
 
 import { BaseLayout } from "@/app/layouts"
 import {
@@ -24,34 +14,22 @@ import {
   toggleTodo,
   changeTodoTitle,
 } from "@/entities/todo"
+import { CreateTodo } from "@/features/create-todo"
+import { EditTodo } from "@/features/edit-todo"
+import { TodoItem } from "@/features/display-todo"
 
 export const HomePage = () => {
   const [todos, setTodos] = useState<Todo[]>([])
-  const [title, setTitle] = useState("")
+
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null)
   const [editingTodoTitle, setEditingTodoTitle] = useState("")
 
-  const handleInputTitle = (event: React.FormEvent<HTMLInputElement>) => {
-    setTitle(event.currentTarget.value)
-  }
-
-  const handleInputTitleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleCreateTodo()
-      setTitle("")
-    }
-  }
-
-  const handleCreateTodo = () => {
-    if (title.length === 0) {
-      return
-    }
-
+  const handleCreateTodo = useCallback((title: string) => {
     const newTodo = createTodo({ title })
     setTodos([...todos, newTodo])
-  }
+  }, [todos])
 
-  const toggleComplete = (id: string) => {
+  const toggleComplete = useCallback((id: string) => {
     const updatedTodos = todos.map((todo) => {
       if (todo.id === id) {
         return toggleTodo(todo)
@@ -60,9 +38,9 @@ export const HomePage = () => {
     })
 
     setTodos(updatedTodos)
-  }
+  }, [todos])
 
-  const handleDeleteTodo = (id: string) => {
+  const handleDeleteTodo = useCallback((id: string) => {
     const targetTodo = todos.find((todo) => todo.id === id)
 
     if (targetTodo) {
@@ -75,14 +53,23 @@ export const HomePage = () => {
 
       setTodos(updatedTodos)
     }
-  }
+  }, [todos])
 
-  const handleStartEditingTodo = (id: string) => {
+  const handleEditTodoStart = useCallback((id: string) => {
     setEditingTodoId(id)
     setEditingTodoTitle(todos.find((todo) => todo.id === id)?.title || "")
-  }
+  }, [todos])
 
-  const handleSaveEditedTodoTitle = () => {
+  const handleEditTodoTitleChange = useCallback((title: string) => {
+    setEditingTodoTitle(title)
+  }, [])
+
+  const handleEditTodoReset = useCallback(() => {
+    setEditingTodoId(null)
+    setEditingTodoTitle("")
+  }, [])
+
+  const handleEditTodoSave = useCallback(() => {
     const updatedTodos = todos.map((todo) => {
       if (todo.id === editingTodoId) {
         return changeTodoTitle({
@@ -92,9 +79,11 @@ export const HomePage = () => {
       }
       return todo
     })
+
     setTodos(updatedTodos)
-    setEditingTodoId(null)
-  }
+
+    handleEditTodoReset()
+  }, [editingTodoId, editingTodoTitle, handleEditTodoReset, todos])
 
   return (
     <BaseLayout>
@@ -102,61 +91,27 @@ export const HomePage = () => {
         <h1 className="text-base font-bold tracking-wider">
           Todo List
         </h1>
-        <div className="flex gap-2">
-          <Input
-            value={title}
-            placeholder="할 일을 입력하세요."
-            onInput={handleInputTitle}
-            onKeyDown={handleInputTitleKeyDown}
-          />
-          <Button onClick={handleCreateTodo} className="cursor-pointer">
-            <PlusIcon />
-          </Button>
-        </div>
+        <CreateTodo onCreate={handleCreateTodo} />
       </div>
 
       <div className="flex flex-col gap-4">
         {todos.map((todo) => (
           <div key={todo.id} className="flex items-center justify-between gap-2 px-4 py-2 rounded-md border">
-            {editingTodoId === todo.id ? (
-              <div className="flex items-center gap-2">
-                <Input
-                  value={editingTodoTitle}
-                  onInput={(event) => {
-                    setEditingTodoTitle(event.currentTarget.value)
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      handleSaveEditedTodoTitle()
-                    }
-                  }}
-                  autoFocus
-                />
-                <Button onClick={handleSaveEditedTodoTitle} className="cursor-pointer">
-                  <CheckIcon />
-                </Button>
-                <Button onClick={() => setEditingTodoId(null)} className="cursor-pointer">
-                  <XIcon />
-                </Button>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center gap-2">
-                  <Checkbox id={todo.id} checked={todo.completed} onCheckedChange={() => toggleComplete(todo.id)} />
-                  <label htmlFor={todo.id} className={cn("cursor-pointer text-sm", { "line-through": todo.completed })}>
-                    {todo.title}
-                  </label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="secondary" size="icon" onClick={() => handleStartEditingTodo(todo.id)} className="cursor-pointer">
-                    <EditIcon />
-                  </Button>
-                  <Button variant="destructive" size="icon" onClick={() => handleDeleteTodo(todo.id)} className="cursor-pointer">
-                    <TrashIcon />
-                  </Button>
-                </div>
-              </>
-            )}
+            {editingTodoId === todo.id ?
+              <EditTodo
+                defaultValue={todo.title}
+                onChange={handleEditTodoTitleChange}
+                onSave={handleEditTodoSave}
+                onReset={handleEditTodoReset}
+              />
+              :
+              <TodoItem
+                todo={todo}
+                onToggleComplete={toggleComplete}
+                onEditStart={handleEditTodoStart}
+                onDelete={handleDeleteTodo}
+              />
+            }
           </div>
         ))}
       </div>
