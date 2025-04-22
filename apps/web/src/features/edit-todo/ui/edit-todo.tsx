@@ -50,11 +50,12 @@ export const EditTodo = ({
         onInput={handleTitleChange}
         onKeyDown={handleEnterKeyPress}
         autoFocus
+        data-testid="edit-todo-input"
       />
-      <Button onClick={handleSave} className="cursor-pointer">
+      <Button onClick={handleSave} className="cursor-pointer" data-testid="save-todo-button">
         <CheckIcon />
       </Button>
-      <Button onClick={onReset} className="cursor-pointer">
+      <Button onClick={onReset} className="cursor-pointer" data-testid="cancel-todo-button">
         <XIcon />
       </Button>
     </div>
